@@ -92,6 +92,15 @@ public class Main {
 
         System.out.println(client);
 
+        System.out.println(client);
+
+        System.out.println(storeService.getTotalRevenue(store, goodsService));
+        System.out.println(storeService.getTotalProfit(store, goodsService));
+
+
+
+
+
         try {
             System.out.println(receiptService.getReceipt(store, client, adrian));
         } catch (NotEnoughBudgetException e) {
@@ -100,13 +109,7 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        System.out.println(client);
-
-        System.out.println(storeService.getTotalRevenue(store, goodsService));
-        System.out.println(storeService.getTotalProfit(store, goodsService));
-
-        System.out.println(storeService.getCountOfReceipts(store));
-
         System.out.println(storeService.getTotalAmountRevenueFromReceipts(store));
+        System.out.println(storeService.getCountOfReceipts(store));
     }
 }

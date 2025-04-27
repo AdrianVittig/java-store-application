@@ -31,7 +31,6 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public BigDecimal getTotalRevenue(Store store, GoodsService goodsService) {
         BigDecimal totalRevenue = BigDecimal.ZERO;
-        //TODO
         for(Goods goods : store.getSoldGoods().keySet()){
             if(goods.getExpirationDate().minusDays(store.getDaysForSale()).isBefore(LocalDate.now()) || goods.getExpirationDate().minusDays(store.getDaysForSale()).equals(LocalDate.now())){{
                 totalRevenue = totalRevenue.add(goods.getQuantity().multiply(goodsService.getSellingPrice(goods, store)).subtract(goodsService.getSellingPrice(goods,store).multiply(BigDecimal.valueOf(store.getPercentage()))).setScale(2, BigDecimal.ROUND_HALF_UP));
@@ -46,7 +45,6 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public BigDecimal getTotalProfit(Store store, GoodsService goodsService) {
         BigDecimal totalProfit = BigDecimal.ZERO;
-        //TODO
         for(Goods goods : store.getSoldGoods().keySet()){
             totalProfit = getTotalRevenue(store, goodsService).subtract(getGoodsManufacturerPrice(store, goods)).setScale(2, BigDecimal.ROUND_HALF_UP);
         }

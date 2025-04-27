@@ -1,9 +1,10 @@
 package org.informatics.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cashdesk {
+public class Cashdesk implements Serializable {
     private Employee currEmployee;
     private List<Goods> scannedGoods;
 

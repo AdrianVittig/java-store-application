@@ -1,5 +1,6 @@
 package org.informatics.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -7,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-public class Receipt {
+public class Receipt implements Serializable {
     private long id;
     private Employee employeeIssued;
     private LocalDate date;

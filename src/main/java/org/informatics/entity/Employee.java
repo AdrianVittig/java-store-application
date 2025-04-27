@@ -1,8 +1,9 @@
 package org.informatics.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Employee {
+public class Employee implements Serializable {
     private long id;
     private String name;
     private BigDecimal salary;

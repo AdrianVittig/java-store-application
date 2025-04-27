@@ -1,11 +1,12 @@
 package org.informatics.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Client {
+public class Client implements Serializable {
     private BigDecimal budget;
     private Map<Goods, BigDecimal> goodsToBuy;
     BigDecimal totalAmount;

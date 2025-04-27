@@ -1,12 +1,13 @@
 package org.informatics.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Store {
+public class Store implements Serializable {
     private List<Employee> employees;
     private List<Cashdesk> cashdesks;
     private List<Goods> deliveredGoods;
@@ -16,8 +17,6 @@ public class Store {
     private BigDecimal surChargeNonFood;
     private int daysForSale;
     private double percentage;
-
-
 
     public Store(List<Employee> employees, List<Cashdesk> cashdesks, BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
         this.employees = employees;

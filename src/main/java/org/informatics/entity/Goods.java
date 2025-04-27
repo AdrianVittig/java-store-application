@@ -2,9 +2,10 @@ package org.informatics.entity;
 
 import org.informatics.util.GoodsType;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-public class Goods {
+public class Goods implements Serializable {
     private long id;
     private String name;
     private BigDecimal quantity;
