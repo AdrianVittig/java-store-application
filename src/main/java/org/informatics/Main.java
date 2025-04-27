@@ -48,13 +48,6 @@ public class Main {
         GoodsService goodsService = new GoodsServiceImpl();
         CashdeskService cashdeskService = new CashdeskServiceImpl(receiptService);
 
-        //TODO  update
-//        try {
-//            System.out.println(cashdeskService.canBuyGoods(client));
-//        } catch (NotEnoughBudgetException e) {
-//            throw new RuntimeException(e);
-//        }
-
         Store store = new Store(employeeList, cashdeskList, BigDecimal.valueOf(5),BigDecimal.valueOf(5), 7, 20);
         List<Goods> deliveredGoods = new ArrayList<>();
 //        List<Goods> soldGoods = new ArrayList<>();
@@ -78,7 +71,6 @@ public class Main {
         } catch (ExpiredGoodsException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(client);
 
         try {
             System.out.println(cashdeskService.getTotalAmount(store, client));
@@ -90,26 +82,6 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        System.out.println(client);
 
-        System.out.println(client);
-
-        System.out.println(storeService.getTotalRevenue(store, goodsService));
-        System.out.println(storeService.getTotalProfit(store, goodsService));
-
-
-
-
-
-        try {
-            System.out.println(receiptService.getReceipt(store, client, adrian));
-        } catch (NotEnoughBudgetException e) {
-            throw new RuntimeException(e);
-        } catch (ExpiredGoodsException | NotEnoughQuantityException e) {
-            throw new RuntimeException(e);
-        }
-
-        System.out.println(storeService.getTotalAmountRevenueFromReceipts(store));
-        System.out.println(storeService.getCountOfReceipts(store));
     }
 }
