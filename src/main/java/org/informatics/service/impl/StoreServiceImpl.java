@@ -1,6 +1,7 @@
 package org.informatics.service.impl;
 
 import org.informatics.entity.*;
+import org.informatics.exception.NotValidArgumentException;
 import org.informatics.service.contract.GoodsService;
 import org.informatics.service.contract.StoreService;
 
@@ -52,7 +53,7 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public void deliverGoods(Store store, Goods goods, BigDecimal quantity, List<Goods> listOfDeliveredGoods) {
+    public void deliverGoods(Store store, Goods goods, BigDecimal quantity, List<Goods> listOfDeliveredGoods) throws NotValidArgumentException {
         goods.setQuantity(quantity);
         listOfDeliveredGoods.add(goods);
         store.setDeliveredGoods(listOfDeliveredGoods);
@@ -71,4 +72,6 @@ public class StoreServiceImpl implements StoreService {
         }
         return totalAmount;
     }
+
+
 }

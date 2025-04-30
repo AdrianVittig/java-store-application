@@ -1,5 +1,7 @@
 package org.informatics.entity;
 
+import org.informatics.exception.NotValidArgumentException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,10 @@ public class Cashdesk implements Serializable {
         return currEmployee;
     }
 
-    public void setCurrEmployee(Employee currEmployee) {
+    public void setCurrEmployee(Employee currEmployee) throws NotValidArgumentException {
+        if(currEmployee == null) {
+            throw new NotValidArgumentException("Employee to set should be a real object.");
+        }
         this.currEmployee = currEmployee;
     }
 
@@ -29,7 +34,10 @@ public class Cashdesk implements Serializable {
         return scannedGoods;
     }
 
-    public void setScannedGoods(List<Goods> scannedGoods) {
+    public void setScannedGoods(List<Goods> scannedGoods) throws NotValidArgumentException {
+        if(scannedGoods == null || scannedGoods.size() == 0) {
+            throw new NotValidArgumentException("Scanned goods can not be empty!");
+        }
         this.scannedGoods = scannedGoods;
     }
 

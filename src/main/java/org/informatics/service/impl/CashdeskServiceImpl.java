@@ -17,7 +17,6 @@ import java.util.Map;
 public class CashdeskServiceImpl implements CashdeskService {
     private final ReceiptService receiptService;
     GoodsService goodsService = new GoodsServiceImpl();
-    List<Receipt> listOfReceipts = new ArrayList<>();
     public Map<Goods, BigDecimal> scannedGoods = new HashMap<>();
 
     public CashdeskServiceImpl(ReceiptService receiptService) {
@@ -25,7 +24,7 @@ public class CashdeskServiceImpl implements CashdeskService {
     }
 
     @Override
-    public void performOperationOnCashdesk(Store store, Employee employee, Client client) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException {
+    public void performOperationOnCashdesk(Store store, Employee employee, Client client) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException, NotValidArgumentException {
         if(store.availableCashdesk()){
             scanGoods(client.getGoodsToBuy(), client, employee, store);
             receiptService.getReceipt(store, client, employee);
@@ -39,7 +38,7 @@ public class CashdeskServiceImpl implements CashdeskService {
     }
 
     @Override
-    public Cashdesk setEmployeeOnACashdesk(Store store, Cashdesk cashdesk, Employee employee) throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException {
+    public Cashdesk setEmployeeOnACashdesk(Store store, Cashdesk cashdesk, Employee employee) throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException, NotValidArgumentException {
         if (!isCashdeskBusy(cashdesk) && !employeeAlreadyWorking(store, employee)) {
             cashdesk.setCurrEmployee(employee);
         }
@@ -114,7 +113,5 @@ public class CashdeskServiceImpl implements CashdeskService {
             }
         }
         return false;
-
-
     }
 }

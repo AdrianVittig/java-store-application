@@ -1,5 +1,7 @@
 package org.informatics.entity;
 
+import org.informatics.exception.NotValidArgumentException;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,6 +20,13 @@ public class Store implements Serializable {
     private int daysForSale;
     private double percentage;
 
+    public Store() {
+    }
+
+    public Store(double percentage) {
+        this.percentage = percentage;
+    }
+
     public Store(List<Employee> employees, List<Cashdesk> cashdesks, BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
         this.employees = employees;
         this.cashdesks = cashdesks;
@@ -31,7 +40,10 @@ public class Store implements Serializable {
         return percentage;
     }
 
-    public void setPercentage(double percentage) {
+    public void setPercentage(double percentage) throws NotValidArgumentException {
+        if(percentage < 0) {
+            throw new NotValidArgumentException("Percentage should be a positive number.");
+        }
         this.percentage = percentage;
     }
 
@@ -39,7 +51,10 @@ public class Store implements Serializable {
         return daysForSale;
     }
 
-    public void setDaysForSale(int daysForSale) {
+    public void setDaysForSale(int daysForSale) throws NotValidArgumentException {
+        if(daysForSale <= 0){
+            throw new NotValidArgumentException("Days should be a positive number.");
+        }
         this.daysForSale = daysForSale;
     }
 
@@ -47,7 +62,10 @@ public class Store implements Serializable {
         return surChargeGroceries;
     }
 
-    public void setSurChargeGroceries(BigDecimal surChargeGroceries) {
+    public void setSurChargeGroceries(BigDecimal surChargeGroceries) throws NotValidArgumentException {
+        if(surChargeGroceries.compareTo(BigDecimal.ZERO) < 0) {
+            throw new NotValidArgumentException("The surcharge should be a positive number");
+        }
         this.surChargeGroceries = surChargeGroceries;
     }
 
@@ -55,7 +73,10 @@ public class Store implements Serializable {
         return employees;
     }
 
-    public void setEmployees(List<Employee> employees) {
+    public void setEmployees(List<Employee> employees) throws NotValidArgumentException {
+        if(employees == null || employees.size() <= 0) {
+            throw new NotValidArgumentException("Employees list can not be empty.");
+        }
         this.employees = employees;
     }
 
@@ -63,7 +84,10 @@ public class Store implements Serializable {
         return cashdesks;
     }
 
-    public void setCashdesks(List<Cashdesk> cashdesks) {
+    public void setCashdesks(List<Cashdesk> cashdesks) throws NotValidArgumentException {
+        if(cashdesks == null || cashdesks.size() <= 0) {
+            throw new NotValidArgumentException("Cashdesk list can not be empty.");
+        }
         this.cashdesks = cashdesks;
     }
 
@@ -71,7 +95,10 @@ public class Store implements Serializable {
         return deliveredGoods;
     }
 
-    public void setDeliveredGoods(List<Goods> deliveredGoods) {
+    public void setDeliveredGoods(List<Goods> deliveredGoods) throws NotValidArgumentException {
+        if(deliveredGoods == null || deliveredGoods.size() <= 0) {
+            throw new NotValidArgumentException("Cashdesk list can not be empty.");
+        }
         this.deliveredGoods = deliveredGoods;
     }
 
@@ -79,7 +106,10 @@ public class Store implements Serializable {
         return soldGoods;
     }
 
-    public void setSoldGoods(HashMap<Goods, BigDecimal> soldGoods) {
+    public void setSoldGoods(HashMap<Goods, BigDecimal> soldGoods) throws NotValidArgumentException {
+        if(soldGoods == null || soldGoods.isEmpty()) {
+            throw new NotValidArgumentException("Sold goods list can not be empty.");
+        }
         this.soldGoods = soldGoods;
     }
 
@@ -87,7 +117,10 @@ public class Store implements Serializable {
         return receipts;
     }
 
-    public void setReceipts(List<Receipt> receipts) {
+    public void setReceipts(List<Receipt> receipts) throws NotValidArgumentException {
+        if(receipts.isEmpty() || receipts.size() <= 0) {
+            throw new NotValidArgumentException("Receipts list can not be empty.");
+        }
         this.receipts = receipts;
     }
 
@@ -95,7 +128,10 @@ public class Store implements Serializable {
         return surChargeGroceries;
     }
 
-    public void setSurCharge(BigDecimal surCharge) {
+    public void setSurCharge(BigDecimal surCharge) throws NotValidArgumentException {
+        if(surCharge == null || surCharge.compareTo(BigDecimal.ZERO) < 0) {
+            throw new NotValidArgumentException("Surcharge should be positive.");
+        }
         this.surChargeGroceries = surCharge;
     }
 
@@ -103,7 +139,10 @@ public class Store implements Serializable {
         return surChargeNonFood;
     }
 
-    public void setSurChargeNonFood(BigDecimal surChargeNonFood) {
+    public void setSurChargeNonFood(BigDecimal surChargeNonFood) throws NotValidArgumentException {
+        if(surChargeNonFood == null || surChargeNonFood.compareTo(BigDecimal.ZERO) < 0) {
+            throw new NotValidArgumentException("Surcharge should be positive.");
+        }
         this.surChargeNonFood = surChargeNonFood;
     }
 
@@ -117,15 +156,16 @@ public class Store implements Serializable {
             BigDecimal quantity = entry.getValue();
             this.soldGoods.put(goods, this.soldGoods.getOrDefault(goods, BigDecimal.ZERO).add(quantity));
         }
+
     }
 
-    public boolean availableCashdesk(){
+    public boolean availableCashdesk() throws NotValidArgumentException {
         for(Cashdesk cashdesk : this.getCashdesks()){
             if(cashdesk.getCurrEmployee() != null){
                 return true;
             }
         }
-        return false;
+        throw new NotValidArgumentException("Not available cashdesk");
     }
 
 
@@ -142,4 +182,5 @@ public class Store implements Serializable {
                 ", percentage=" + percentage +
                 '}';
     }
+
 }

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NotValidArgumentException {
         Goods keyboard = new Goods("CM STORM", BigDecimal.valueOf(200).setScale(2, RoundingMode.HALF_UP), GoodsType.NON_FOODS, LocalDate.of(2025, 8, 28));
 
         Goods mouse = new Goods("Razer", BigDecimal.valueOf(100).setScale(2, RoundingMode.HALF_UP), GoodsType.NON_FOODS, LocalDate.of(2027, 8, 12));
@@ -53,7 +53,11 @@ public class Main {
 //        List<Goods> soldGoods = new ArrayList<>();
         StoreService storeService = new StoreServiceImpl();
 
-        storeService.deliverGoods(store, keyboard, BigDecimal.valueOf(10), deliveredGoods);
+        try {
+            storeService.deliverGoods(store, keyboard, BigDecimal.valueOf(10), deliveredGoods);
+        } catch (NotValidArgumentException e) {
+            throw new RuntimeException(e);
+        }
 
         //DELIVERING TO STORE
         System.out.println(storeService.getTotalSalaries(store));
@@ -81,6 +85,10 @@ public class Main {
         } catch (NotEnoughBudgetException e) {
             throw new RuntimeException(e);
         }
+
+        System.out.println(store.getDeliveredGoods());
+        System.out.println(store.getSoldGoods());
+
 
 
     }

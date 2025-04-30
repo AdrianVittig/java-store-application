@@ -10,8 +10,8 @@ import java.util.Map;
 public interface CashdeskService {
     BigDecimal getTotalAmount(Store store, Client client) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException;
     boolean isCashdeskAvailable(Cashdesk cashdesk, Store store, Employee employee) throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException;
-    Cashdesk setEmployeeOnACashdesk(Store store, Cashdesk cashdesk ,Employee employee) throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException;
+    Cashdesk setEmployeeOnACashdesk(Store store, Cashdesk cashdesk ,Employee employee) throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException, NotValidArgumentException;
     Map<Goods, BigDecimal> scanGoods(Map<Goods, BigDecimal> clientMap, Client client, Employee employee, Store store) throws NotEnoughQuantityException, NotEnoughBudgetException, ExpiredGoodsException;
 
-    void performOperationOnCashdesk(Store store, Employee employee, Client client) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException;
+    void performOperationOnCashdesk(Store store, Employee employee, Client client) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException, NotValidArgumentException;
 }

@@ -7,6 +7,7 @@ import org.informatics.entity.Receipt;
 import org.informatics.entity.Store;
 import org.informatics.exception.ExpiredGoodsException;
 import org.informatics.exception.NotEnoughBudgetException;
+import org.informatics.exception.NotValidArgumentException;
 import org.informatics.service.contract.CashdeskService;
 import org.informatics.service.contract.GoodsService;
 import org.informatics.service.contract.ReceiptService;
@@ -57,7 +58,11 @@ public class ReceiptServiceImpl implements ReceiptService {
 
         client.setBudget(client.getBudget().subtract(clientTotal));
         receipts.add(receipt);
-        store.setReceipts(receipts);
+        try {
+            store.setReceipts(receipts);
+        } catch (NotValidArgumentException e) {
+            throw new RuntimeException(e);
+        }
         return receipt;
     }
 
