@@ -15,6 +15,9 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.11.0")
 }
 
+
+
 tasks.test {
     useJUnitPlatform()
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }

@@ -23,11 +23,19 @@ public class CashdeskServiceImpl implements CashdeskService {
         this.receiptService = receiptService;
     }
 
+    public CashdeskServiceImpl(ReceiptService receiptService, GoodsService goodsService) {
+        this.receiptService = receiptService;
+        this.goodsService = goodsService;
+    }
+
     @Override
-    public void performOperationOnCashdesk(Store store, Employee employee, Client client) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException, NotValidArgumentException {
+    public void performOperationOnCashdesk(Store store, Employee employee, Client client) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException, NotValidArgumentException, NotAvailableCashdeskException {
         if(store.availableCashdesk()){
             scanGoods(client.getGoodsToBuy(), client, employee, store);
             receiptService.getReceipt(store, client, employee);
+        }
+        if(!store.availableCashdesk()){
+            throw new NotAvailableCashdeskException("There is not available cashdesk at the moment.");
         }
         return;
     }
@@ -46,7 +54,7 @@ public class CashdeskServiceImpl implements CashdeskService {
     }
 
     @Override
-    public Map<Goods, BigDecimal> scanGoods(Map<Goods, BigDecimal> unscannedGoods, Client client, Employee employee, Store store) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException {
+    public Map<Goods, BigDecimal> scanGoods(Map<Goods, BigDecimal> unscannedGoods, Client client, Employee employee, Store store) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException, NotValidArgumentException {
         for (Map.Entry<Goods, BigDecimal> entry : unscannedGoods.entrySet()) {
             Goods goods = entry.getKey();
             BigDecimal quantity = entry.getValue();
@@ -69,14 +77,13 @@ public class CashdeskServiceImpl implements CashdeskService {
 
             client.setGoodsToBuy(scannedGoods);
         }
-
         store.addSoldGoods(scannedGoods);
 
         return scannedGoods;
     }
 
     @Override
-    public BigDecimal getTotalAmount(Store store, Client client) throws ExpiredGoodsException, NotEnoughBudgetException {
+    public BigDecimal getTotalAmount(Store store, Client client) throws ExpiredGoodsException, NotEnoughBudgetException, NotValidArgumentException, NotEnoughQuantityException {
         BigDecimal total = BigDecimal.ZERO;
 
         for (Map.Entry<Goods, BigDecimal> entry : client.getGoodsToBuy().entrySet()) {
@@ -84,8 +91,15 @@ public class CashdeskServiceImpl implements CashdeskService {
                 total = total.add(goodsService.calculatePrice(entry.getKey(), store).multiply(entry.getValue()));
                 this.canBuyGoods(client, total);
             }
+            if(entry.getValue().compareTo(client.getGoodsToBuy().get(entry.getKey())) < 0) {
+                throw new NotEnoughQuantityException(entry.getValue().subtract(client.getGoodsToBuy().get(entry.getKey())), entry.getKey());
+            }
         }
         client.setTotalAmount(total);
+        if(client.getBudget().compareTo(total) < 0) {
+            throw new NotEnoughBudgetException("Not enough budget!");
+        }
+
         return total;
     }
 

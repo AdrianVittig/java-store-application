@@ -53,6 +53,8 @@ public class Main {
 //        List<Goods> soldGoods = new ArrayList<>();
         StoreService storeService = new StoreServiceImpl();
 
+
+
         try {
             storeService.deliverGoods(store, keyboard, BigDecimal.valueOf(10), deliveredGoods);
         } catch (NotValidArgumentException e) {
@@ -60,8 +62,16 @@ public class Main {
         }
 
         //DELIVERING TO STORE
-        System.out.println(storeService.getTotalSalaries(store));
-        System.out.println(storeService.getGoodsManufacturerPrice(store, keyboard));
+        try {
+            System.out.println(storeService.getTotalSalaries(store));
+        } catch (EmployeeListEmptyException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            System.out.println(storeService.getGoodsManufacturerPrice(store, keyboard));
+        } catch (StoreDeliveredGoodsEmptyException e) {
+            throw new RuntimeException(e);
+        }
 
         Map<Goods, BigDecimal> clientMap = new HashMap<>();
         clientMap.put(keyboard, BigDecimal.valueOf(3));
@@ -86,9 +96,30 @@ public class Main {
             throw new RuntimeException(e);
         }
 
+        try {
+            System.out.println(receiptService.getReceipt(store, client, adrian));
+        } catch (NotEnoughBudgetException e) {
+            throw new RuntimeException(e);
+        } catch (ExpiredGoodsException e) {
+            throw new RuntimeException(e);
+        } catch (NotEnoughQuantityException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println(store.getDeliveredGoods());
         System.out.println(store.getSoldGoods());
 
+        System.out.println(store.getReceipts());
+
+        //DEMO
+        // boolean isRunning = true
+        // while(isRunning)
+        // 1. Total salaries -- when 1 is pressed
+        // 2. Deliver the objects to the store
+        // 3. Scan goods
+        // 4. getReceipt
+        // 5. Get total amount of receipts
+        // 0. Exit (isRunning = false)
+        
 
 
     }

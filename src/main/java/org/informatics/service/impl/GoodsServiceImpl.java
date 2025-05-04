@@ -3,6 +3,7 @@ package org.informatics.service.impl;
 import org.informatics.entity.Goods;
 import org.informatics.entity.Store;
 import org.informatics.exception.ExpiredGoodsException;
+import org.informatics.exception.NotValidArgumentException;
 import org.informatics.service.contract.GoodsService;
 import org.informatics.util.GoodsType;
 
@@ -11,13 +12,21 @@ import java.time.LocalDate;
 
 public class GoodsServiceImpl implements GoodsService {
     @Override
-    public BigDecimal getSellingPrice(Goods goods, Store store) {
+    public BigDecimal getSellingPrice(Goods goods, Store store) throws NotValidArgumentException {
+
         if(goods.getGoodsType().equals(GoodsType.GROCERIES)){
+            if(store.getSurChargeGroceries().compareTo(BigDecimal.ZERO) <= 0){
+                throw new NotValidArgumentException("Surcharge must be positive value");
+            }
             return goods.getManufacturerPrice().add(goods.getManufacturerPrice().multiply(store.getSurCharge())).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
         else if(goods.getGoodsType().equals(GoodsType.NON_FOODS)){
+            if(store.getSurChargeNonFood().compareTo(BigDecimal.ZERO) <= 0){
+                throw new NotValidArgumentException("Surcharge must be positive value");
+            }
             return goods.getManufacturerPrice().add(goods.getManufacturerPrice().multiply(store.getSurChargeNonFood())).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
+
         return goods.getManufacturerPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
@@ -30,7 +39,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public BigDecimal calculatePrice(Goods goods, Store store) throws ExpiredGoodsException {
+    public BigDecimal calculatePrice(Goods goods, Store store) throws ExpiredGoodsException, NotValidArgumentException {
         LocalDate expirationDate = goods.getExpirationDate();
         LocalDate discountDay = goods.getExpirationDate().minusDays(store.getDaysForSale());
 
@@ -38,7 +47,6 @@ public class GoodsServiceImpl implements GoodsService {
             if(goods.getGoodsType().equals(GoodsType.NON_FOODS)){
                 return getSellingPrice(goods, store).subtract((getSellingPrice(goods, store).multiply(store.getSurChargeNonFood()))).setScale(2, BigDecimal.ROUND_HALF_UP);
             }
-
             return getSellingPrice(goods, store).subtract((getSellingPrice(goods, store).multiply(store.getSurChargeGroceries()))).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
 

@@ -8,10 +8,10 @@ import org.informatics.entity.Store;
 import org.informatics.exception.ExpiredGoodsException;
 import org.informatics.exception.NotEnoughBudgetException;
 import org.informatics.exception.NotValidArgumentException;
-import org.informatics.service.contract.CashdeskService;
+import org.informatics.exception.ReceiptsListIsEmptyException;
 import org.informatics.service.contract.GoodsService;
 import org.informatics.service.contract.ReceiptService;
-import org.informatics.service.contract.SerializeDeserializeService;
+import org.informatics.service.contract.FileService;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -25,7 +25,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     BigDecimal totalAmountSoFar = BigDecimal.ZERO;
 
     @Override
-    public Receipt getReceipt(Store store, Client client, Employee employee) throws NotEnoughBudgetException, ExpiredGoodsException {
+    public Receipt getReceipt(Store store, Client client, Employee employee) throws NotEnoughBudgetException, ExpiredGoodsException, NotValidArgumentException {
         BigDecimal clientTotal = client.getTotalAmount();
         LocalDateTime dateTime = LocalDateTime.now();
         Receipt receipt = new Receipt();
@@ -41,7 +41,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 
         receipt.setTotal(clientTotal);
 
-        SerializeDeserializeService serializeDeserializeService = new SerializeDeserializeServiceImpl();
+        FileService serializeDeserializeService = new FileServiceImpl();
         try {
             serializeDeserializeService.serializeReceipt("receipt-"+receipt.getId()+".ser", receipt);
         } catch (IOException e) {
@@ -67,16 +67,19 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @Override
-    public BigDecimal getTotalAmountSoFar(Store store) {
-        for(Receipt receipt : receipts){
+    public BigDecimal getTotalAmountSoFar(Store store) throws ReceiptsListIsEmptyException {
+        for(Receipt receipt : store.getReceipts()){
             totalAmountSoFar = totalAmountSoFar.add(receipt.getTotal());
+        }
+        if(store.getReceipts().isEmpty()){
+            throw new ReceiptsListIsEmptyException("Receipts list is empty.");
         }
         return totalAmountSoFar;
     }
 
     @Override
     public BigDecimal getTotalCountSoFar(Store store) {
-        for(Receipt receipt : receipts){
+        for(Receipt receipt : store.getReceipts()){
             totalCountSoFar = totalCountSoFar.add(BigDecimal.ONE);
         }
         return totalCountSoFar;

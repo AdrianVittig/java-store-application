@@ -1,11 +1,11 @@
 package org.informatics.service.impl;
 
 import org.informatics.entity.Receipt;
-import org.informatics.service.contract.SerializeDeserializeService;
+import org.informatics.service.contract.FileService;
 
 import java.io.*;
 
-public class SerializeDeserializeServiceImpl implements SerializeDeserializeService {
+public class FileServiceImpl implements FileService {
     @Override
     public void serializeReceipt(String fileName, Receipt receipt) throws IOException {
         try(FileOutputStream fileOutputStream = new FileOutputStream(fileName);
