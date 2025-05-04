@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Store implements Serializable {
+    private String name;
+
     private List<Employee> employees;
     private List<Cashdesk> cashdesks;
     private List<Goods> deliveredGoods;
@@ -27,13 +29,22 @@ public class Store implements Serializable {
         this.percentage = percentage;
     }
 
-    public Store(List<Employee> employees, List<Cashdesk> cashdesks, BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
+    public Store(String name, List<Employee> employees, List<Cashdesk> cashdesks, BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
+        this.name = name;
         this.employees = employees;
         this.cashdesks = cashdesks;
         this.surChargeGroceries = surChargeGroceries.divide(BigDecimal.valueOf(100));
         this.surChargeNonFood = surChargeNonFood.divide(BigDecimal.valueOf(100));
         this.daysForSale = daysForSale;
         this.percentage = percentage / 100;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getPercentage() {
@@ -172,7 +183,8 @@ public class Store implements Serializable {
     @Override
     public String toString() {
         return "Store{" +
-                "employees=" + employees +
+                "name=" + name +
+                ", employees=" + employees +
                 ", cashdesks=" + cashdesks +
                 ", deliveredGoods=" + deliveredGoods +
                 ", receipts=" + receipts +

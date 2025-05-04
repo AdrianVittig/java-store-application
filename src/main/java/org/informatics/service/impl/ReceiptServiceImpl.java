@@ -23,12 +23,13 @@ public class ReceiptServiceImpl implements ReceiptService {
     List<Receipt> receipts = new ArrayList<>();
     BigDecimal totalCountSoFar = BigDecimal.ZERO;
     BigDecimal totalAmountSoFar = BigDecimal.ZERO;
+    Receipt receipt;
 
     @Override
     public Receipt getReceipt(Store store, Client client, Employee employee) throws NotEnoughBudgetException, ExpiredGoodsException, NotValidArgumentException {
         BigDecimal clientTotal = client.getTotalAmount();
         LocalDateTime dateTime = LocalDateTime.now();
-        Receipt receipt = new Receipt();
+        receipt = new Receipt();
         receipt.setGoodsOnReceipt(client.getGoodsToBuy());
         receipt.setDate(dateTime.toLocalDate());
         receipt.setTime(dateTime.toLocalTime());

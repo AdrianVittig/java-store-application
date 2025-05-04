@@ -14,6 +14,10 @@ public class Cashdesk implements Serializable {
         this.scannedGoods = new ArrayList<>();
     }
 
+    public Cashdesk(Employee currEmployee) {
+        this.currEmployee = currEmployee;
+    }
+
     public Cashdesk(Employee currEmployee, List<Goods> scannedGoods) {
         this.currEmployee = currEmployee;
         this.scannedGoods = scannedGoods;
