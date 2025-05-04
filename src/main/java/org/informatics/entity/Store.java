@@ -21,6 +21,7 @@ public class Store implements Serializable {
     private BigDecimal surChargeNonFood;
     private int daysForSale;
     private double percentage;
+    private List<Client> clientList;
 
     public Store() {
     }
@@ -29,10 +30,11 @@ public class Store implements Serializable {
         this.percentage = percentage;
     }
 
-    public Store(String name, List<Employee> employees, List<Cashdesk> cashdesks, BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
+    public Store(String name, List<Employee> employees, List<Cashdesk> cashdesks, List<Client> clientList, BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
         this.name = name;
         this.employees = employees;
         this.cashdesks = cashdesks;
+        this.clientList = clientList;
         this.surChargeGroceries = surChargeGroceries.divide(BigDecimal.valueOf(100));
         this.surChargeNonFood = surChargeNonFood.divide(BigDecimal.valueOf(100));
         this.daysForSale = daysForSale;
@@ -155,6 +157,14 @@ public class Store implements Serializable {
             throw new NotValidArgumentException("Surcharge should be positive.");
         }
         this.surChargeNonFood = surChargeNonFood;
+    }
+
+    public List<Client> getClientList() {
+        return clientList;
+    }
+
+    public void setClientList(List<Client> clientList) {
+        this.clientList = clientList;
     }
 
     public void addSoldGoods(Map<Goods, BigDecimal> soldGoods) {

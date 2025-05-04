@@ -56,8 +56,8 @@ class StoreTest {
         cashdesks.add(cashdesk);
         cashdesk2 = new Cashdesk(null, null);
         cashdesks2 = new ArrayList<>();
-
-        store3 = new Store(employees, cashdesks, BigDecimal.valueOf(5),BigDecimal.valueOf(5), 7, 5);
+        String storeName = "Something";
+        store3 = new Store(storeName, employees, cashdesks, BigDecimal.valueOf(5),BigDecimal.valueOf(5), 7, 5);
 
         goods = new Goods("Apple", BigDecimal.valueOf(5), GoodsType.NON_FOODS, LocalDate.of(2025, 1, 12));
         deliveredGoods = new ArrayList<>();
