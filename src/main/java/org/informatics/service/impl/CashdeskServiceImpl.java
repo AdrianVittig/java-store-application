@@ -38,6 +38,9 @@ public class CashdeskServiceImpl implements CashdeskService {
         if(!store.availableCashdesk()){
             throw new NotAvailableCashdeskException("There is not available cashdesk at the moment.");
         }
+        if(client.getBudget().compareTo(client.getTotalAmount()) < 0){
+            throw new NotEnoughBudgetException("Not enough budget.");
+        }
         return;
     }
 
