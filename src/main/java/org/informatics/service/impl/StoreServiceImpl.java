@@ -45,7 +45,7 @@ public class StoreServiceImpl implements StoreService {
     public BigDecimal getTotalRevenue(Store store, GoodsService goodsService) throws NotValidArgumentException {
         BigDecimal totalRevenue = BigDecimal.ZERO;
 
-        if(store.getSoldGoods().isEmpty()){
+        if(store.getReceipts().isEmpty()){
             throw new NotValidArgumentException("Sold goods list is empty.");
         }
         for(Receipt receipt : store.getReceipts()){
@@ -61,7 +61,6 @@ public class StoreServiceImpl implements StoreService {
         for(Map.Entry<Goods, BigDecimal> entry: store.getSoldGoods().entrySet()){
             totalExpenses = totalExpenses.add(entry.getKey().getManufacturerPrice().multiply(entry.getValue()));
         }
-
         totalProfit = getTotalRevenue(store, goodsService).subtract(totalExpenses);
         return totalProfit;
     }

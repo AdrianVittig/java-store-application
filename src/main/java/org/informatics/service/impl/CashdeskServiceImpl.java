@@ -33,6 +33,7 @@ public class CashdeskServiceImpl implements CashdeskService {
         if(store.availableCashdesk()){
             scanGoods(client.getGoodsToBuy(), client, employee, store);
             receiptService.getReceipt(store, client, employee);
+            scannedGoods.clear();
         }
         if(!store.availableCashdesk()){
             throw new NotAvailableCashdeskException("There is not available cashdesk at the moment.");
@@ -74,7 +75,7 @@ public class CashdeskServiceImpl implements CashdeskService {
             }
 
             this.canBuyGoods(client, this.getTotalAmount(store, client));
-
+            unscannedGoods.remove(entry.getKey(), entry.getValue());
             client.setGoodsToBuy(scannedGoods);
         }
         store.addSoldGoods(scannedGoods);
