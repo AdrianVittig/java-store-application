@@ -194,8 +194,6 @@ public class Runner {
                     }
                     break;
                 case 6:
-                    //FIXME
-                    //TODO (REVENUE is wrong)
                     System.out.println("Which store: 1 - " + storeList.size());
                     for(int i = 0; i < storeList.size(); i++){
                         System.out.println((i+1) + " - " + storeList.get(i).getName());
@@ -209,8 +207,6 @@ public class Runner {
                     }
                     break;
                 case 7:
-                    //FIXME
-                    //TODO (REVENUE APPEARS AS PROFIT (PROFIT = revenue - manufactarer price)
                     System.out.println("Which store: 1 - " + storeList.size());
                     for(int i = 0; i < storeList.size(); i++){
                         System.out.println((i+1) + " - " + storeList.get(i).getName());

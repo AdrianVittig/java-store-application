@@ -39,6 +39,9 @@ class StoreTest {
     Receipt receipt;
     List<Receipt> receipts;
     List<Receipt> receipts2;
+
+    Client client;
+    List<Client> clientList;
     @BeforeEach
     void setUp() throws NotValidArgumentException {
         store = new Store();
@@ -56,8 +59,12 @@ class StoreTest {
         cashdesks.add(cashdesk);
         cashdesk2 = new Cashdesk(null, null);
         cashdesks2 = new ArrayList<>();
+
+        client = new Client(BigDecimal.valueOf(200));
+        clientList = new ArrayList<>();
+        clientList.add(client);
         String storeName = "Something";
-        store3 = new Store(storeName, employees, cashdesks, BigDecimal.valueOf(5),BigDecimal.valueOf(5), 7, 5);
+        store3 = new Store(storeName, employees, cashdesks, clientList ,BigDecimal.valueOf(5),BigDecimal.valueOf(5), 7, 5);
 
         goods = new Goods("Apple", BigDecimal.valueOf(5), GoodsType.NON_FOODS, LocalDate.of(2025, 1, 12));
         deliveredGoods = new ArrayList<>();
