@@ -59,14 +59,6 @@ public class CashdeskServiceImpl implements CashdeskService {
             Goods goods = entry.getKey();
             BigDecimal quantity = entry.getValue();
 
-            if (goods.getQuantity().compareTo(quantity) >= 0) {
-                goods.setQuantity(goods.getQuantity().subtract(quantity));
-                scannedGoods.computeIfAbsent(goods, k -> quantity);
-                goods.setSellingPrice(goodsService.calculatePrice(goods, store));
-            }
-
-            this.canBuyGoods(client, this.getTotalAmount(store, client));
-
             if (quantity.compareTo(goods.getQuantity()) > 0) {
                 throw new NotEnoughQuantityException(quantity.subtract(goods.getQuantity()), goods);
             }
@@ -74,6 +66,14 @@ public class CashdeskServiceImpl implements CashdeskService {
             if (goods.getExpirationDate().isBefore(LocalDate.now())) {
                 throw new ExpiredGoodsException("Expired goods!");
             }
+
+            if (goods.getQuantity().compareTo(quantity) >= 0) {
+                goods.setQuantity(goods.getQuantity().subtract(quantity));
+                scannedGoods.computeIfAbsent(goods, k -> quantity);
+                goods.setSellingPrice(goodsService.calculatePrice(goods, store));
+            }
+
+            this.canBuyGoods(client, this.getTotalAmount(store, client));
 
             client.setGoodsToBuy(scannedGoods);
         }

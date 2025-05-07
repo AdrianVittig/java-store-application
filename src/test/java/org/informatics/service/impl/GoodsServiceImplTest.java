@@ -51,7 +51,6 @@ class GoodsServiceImplTest {
         assertThrows(ExpiredGoodsException.class, () -> goodsService.expiredGoods(goods));
     }
 
-    //TODO
     @Test
     void calculatePrice_whenCurrentDateIsBetweenTheExpirationDateAndExpirationDateMinusXDays_thenSucceed() throws ExpiredGoodsException, NotValidArgumentException {
         Goods goods = new Goods("Keyboard", BigDecimal.valueOf(100), GoodsType.NON_FOODS, LocalDate.of(2025,5,4));

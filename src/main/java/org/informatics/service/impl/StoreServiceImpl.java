@@ -44,16 +44,12 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public BigDecimal getTotalRevenue(Store store, GoodsService goodsService) throws NotValidArgumentException {
         BigDecimal totalRevenue = BigDecimal.ZERO;
+
         if(store.getSoldGoods().isEmpty()){
             throw new NotValidArgumentException("Sold goods list is empty.");
         }
-        for(Goods goods : store.getSoldGoods().keySet()){
-            if(goods.getExpirationDate().minusDays(store.getDaysForSale()).isBefore(LocalDate.now()) || goods.getExpirationDate().minusDays(store.getDaysForSale()).equals(LocalDate.now())){{
-                totalRevenue = totalRevenue.add(goods.getQuantity().multiply(goodsService.getSellingPrice(goods, store)).subtract(goodsService.getSellingPrice(goods,store).multiply(BigDecimal.valueOf(store.getPercentage()))).setScale(2, BigDecimal.ROUND_HALF_UP));
-           }}
-           else{
-               totalRevenue = totalRevenue.add(goods.getQuantity().multiply(goodsService.getSellingPrice(goods, store))).setScale(2, BigDecimal.ROUND_HALF_UP);
-           }
+        for(Receipt receipt : store.getReceipts()){
+            totalRevenue = totalRevenue.add(receipt.getTotal());
         }
         return totalRevenue;
     }
@@ -61,9 +57,12 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public BigDecimal getTotalProfit(Store store, GoodsService goodsService) throws NotValidArgumentException, StoreDeliveredGoodsEmptyException {
         BigDecimal totalProfit = BigDecimal.ZERO;
-        for(Goods goods : store.getSoldGoods().keySet()){
-            totalProfit = getTotalRevenue(store, goodsService).subtract(getGoodsManufacturerPrice(store, goods)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal totalExpenses = BigDecimal.ZERO;
+        for(Map.Entry<Goods, BigDecimal> entry: store.getSoldGoods().entrySet()){
+            totalExpenses = totalExpenses.add(entry.getKey().getManufacturerPrice().multiply(entry.getValue()));
         }
+
+        totalProfit = getTotalRevenue(store, goodsService).subtract(totalExpenses);
         return totalProfit;
     }
 
