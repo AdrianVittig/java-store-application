@@ -41,7 +41,6 @@ public class ReceiptServiceImpl implements ReceiptService {
         }
 
         receipt.setTotal(clientTotal);
-
         FileService serializeDeserializeService = new FileServiceImpl();
         try {
             serializeDeserializeService.serializeReceipt("receipt-"+receipt.getId()+".ser", receipt);

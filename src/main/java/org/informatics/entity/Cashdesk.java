@@ -5,6 +5,7 @@ import org.informatics.exception.NotValidArgumentException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Cashdesk implements Serializable {
     private Employee currEmployee;
@@ -43,6 +44,18 @@ public class Cashdesk implements Serializable {
             throw new NotValidArgumentException("Scanned goods can not be empty!");
         }
         this.scannedGoods = scannedGoods;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Cashdesk cashdesk = (Cashdesk) o;
+        return Objects.equals(currEmployee, cashdesk.currEmployee) && Objects.equals(scannedGoods, cashdesk.scannedGoods);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currEmployee, scannedGoods);
     }
 
     @Override

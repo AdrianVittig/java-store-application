@@ -46,7 +46,7 @@ public class StoreServiceImpl implements StoreService {
         BigDecimal totalRevenue = BigDecimal.ZERO;
 
         if(store.getReceipts().isEmpty()){
-            throw new NotValidArgumentException("Sold goods list is empty.");
+            throw new NotValidArgumentException("Receipts list is empty.");
         }
         for(Receipt receipt : store.getReceipts()){
             totalRevenue = totalRevenue.add(receipt.getTotal());

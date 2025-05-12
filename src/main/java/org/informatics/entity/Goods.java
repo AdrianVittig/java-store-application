@@ -5,6 +5,8 @@ import org.informatics.util.GoodsType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
+
 public class Goods implements Serializable {
     private long id;
     private String name;
@@ -86,6 +88,18 @@ public class Goods implements Serializable {
 
     public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Goods goods = (Goods) o;
+        return id == goods.id && Objects.equals(name, goods.name) && goodsType == goods.goodsType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, goodsType);
     }
 
     @Override

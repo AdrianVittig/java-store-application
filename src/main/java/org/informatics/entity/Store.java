@@ -4,10 +4,7 @@ import org.informatics.exception.NotValidArgumentException;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Store implements Serializable {
     private String name;
@@ -30,7 +27,8 @@ public class Store implements Serializable {
         this.percentage = percentage;
     }
 
-    public Store(String name, List<Employee> employees, List<Cashdesk> cashdesks, List<Client> clientList, BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
+    public Store(String name, List<Employee> employees, List<Cashdesk> cashdesks, List<Client> clientList,
+                 BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
         this.name = name;
         this.employees = employees;
         this.cashdesks = cashdesks;
@@ -189,6 +187,17 @@ public class Store implements Serializable {
         throw new NotValidArgumentException("Not available cashdesk");
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Store store = (Store) o;
+        return daysForSale == store.daysForSale && Double.compare(percentage, store.percentage) == 0 && Objects.equals(name, store.name) && Objects.equals(employees, store.employees) && Objects.equals(cashdesks, store.cashdesks) && Objects.equals(deliveredGoods, store.deliveredGoods) && Objects.equals(soldGoods, store.soldGoods) && Objects.equals(receipts, store.receipts) && Objects.equals(surChargeGroceries, store.surChargeGroceries) && Objects.equals(surChargeNonFood, store.surChargeNonFood) && Objects.equals(clientList, store.clientList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, employees, cashdesks, deliveredGoods, soldGoods, receipts, surChargeGroceries, surChargeNonFood, daysForSale, percentage, clientList);
+    }
 
     @Override
     public String toString() {

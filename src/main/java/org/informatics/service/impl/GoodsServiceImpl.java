@@ -13,7 +13,6 @@ import java.time.LocalDate;
 public class GoodsServiceImpl implements GoodsService {
     @Override
     public BigDecimal getSellingPrice(Goods goods, Store store) throws NotValidArgumentException {
-
         if(goods.getGoodsType().equals(GoodsType.GROCERIES)){
             if(store.getSurChargeGroceries().compareTo(BigDecimal.ZERO) <= 0){
                 throw new NotValidArgumentException("Surcharge must be positive value");
@@ -26,7 +25,6 @@ public class GoodsServiceImpl implements GoodsService {
             }
             return goods.getManufacturerPrice().add(goods.getManufacturerPrice().multiply(store.getSurChargeNonFood())).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
-
         return goods.getManufacturerPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 

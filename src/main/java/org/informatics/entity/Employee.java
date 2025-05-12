@@ -2,6 +2,7 @@ package org.informatics.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Employee implements Serializable {
     private long id;
@@ -37,6 +38,18 @@ public class Employee implements Serializable {
 
     public void setSalary(BigDecimal salary) {
         this.salary = salary;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return id == employee.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override

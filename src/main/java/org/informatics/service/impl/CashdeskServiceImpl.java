@@ -29,7 +29,8 @@ public class CashdeskServiceImpl implements CashdeskService {
     }
 
     @Override
-    public void performOperationOnCashdesk(Store store, Employee employee, Client client) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException, NotValidArgumentException, NotAvailableCashdeskException {
+    public void performOperationOnCashdesk(Store store, Employee employee, Client client) throws ExpiredGoodsException, NotEnoughQuantityException,
+            NotEnoughBudgetException, NotValidArgumentException, NotAvailableCashdeskException {
         if(store.availableCashdesk()){
             scanGoods(client.getGoodsToBuy(), client, employee, store);
             receiptService.getReceipt(store, client, employee);
@@ -45,12 +46,14 @@ public class CashdeskServiceImpl implements CashdeskService {
     }
 
     @Override
-    public boolean isCashdeskAvailable(Cashdesk cashdesk, Store store, Employee employee) throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException {
+    public boolean isCashdeskAvailable(Cashdesk cashdesk, Store store, Employee employee)
+            throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException {
         return !isCashdeskBusy(cashdesk) && !employeeAlreadyWorking(store, employee);
     }
 
     @Override
-    public Cashdesk setEmployeeOnACashdesk(Store store, Cashdesk cashdesk, Employee employee) throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException, NotValidArgumentException {
+    public Cashdesk setEmployeeOnACashdesk(Store store, Cashdesk cashdesk, Employee employee)
+            throws CashdeskAlreadyBusyException, EmployeeAlreadyWorkingException, NotValidArgumentException {
         if (!isCashdeskBusy(cashdesk) && !employeeAlreadyWorking(store, employee)) {
             cashdesk.setCurrEmployee(employee);
         }
@@ -58,7 +61,8 @@ public class CashdeskServiceImpl implements CashdeskService {
     }
 
     @Override
-    public Map<Goods, BigDecimal> scanGoods(Map<Goods, BigDecimal> unscannedGoods, Client client, Employee employee, Store store) throws ExpiredGoodsException, NotEnoughQuantityException, NotEnoughBudgetException, NotValidArgumentException {
+    public Map<Goods, BigDecimal> scanGoods(Map<Goods, BigDecimal> unscannedGoods, Client client, Employee employee, Store store) throws ExpiredGoodsException,
+            NotEnoughQuantityException, NotEnoughBudgetException, NotValidArgumentException {
         for (Map.Entry<Goods, BigDecimal> entry : unscannedGoods.entrySet()) {
             Goods goods = entry.getKey();
             BigDecimal quantity = entry.getValue();
