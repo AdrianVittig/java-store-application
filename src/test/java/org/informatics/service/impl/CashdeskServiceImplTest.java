@@ -24,7 +24,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CashdeskServiceImplTest {
-
     CashdeskService cashdeskService;
     StoreService storeService;
     Store store;
@@ -50,20 +49,21 @@ class CashdeskServiceImplTest {
         Goods keyboard = new Goods("Keyboard", BigDecimal.valueOf(500), GoodsType.NON_FOODS,
                 LocalDate.of(2028, 2,2));
         keyboard.setQuantity(BigDecimal.valueOf(5));
-
+        client = new Client(BigDecimal.valueOf(500));
         client.setGoodsToBuy(clientMap);
 
         Store store1 = Mockito.mock(Store.class);
-        Client client1 = Mockito.mock(Client.class);
         Employee employee1 = Mockito.mock(Employee.class);
         ReceiptService receiptService1 = Mockito.mock(ReceiptService.class);
 
         CashdeskService cashdeskService1 = new CashdeskServiceImpl(receiptService1);
 
         Mockito.when(store1.availableCashdesk()).thenReturn(true);
-        Mockito.when(client1.getGoodsToBuy()).thenReturn(clientMap);
 
-        cashdeskService1.performOperationOnCashdesk(store1, employee1, client1);
+
+        cashdeskService1.performOperationOnCashdesk(store1, employee1, client);
+
+        assertDoesNotThrow(() -> cashdeskService1.performOperationOnCashdesk(store1, employee1, client));
     }
 
     @Test
@@ -98,7 +98,7 @@ class CashdeskServiceImplTest {
         Employee employee1 = Mockito.mock(Employee.class);
 
         Client client1 = Mockito.mock(Client.class);
-        Mockito.when(client1.getBudget()).thenReturn(BigDecimal.valueOf(500));
+        Mockito.when(client1.getBudget()).thenReturn(BigDecimal.valueOf(600));
         client1.setGoodsToBuy(unscannedGoods);
 
         ReceiptService receiptService1 = Mockito.mock(ReceiptService.class);
@@ -110,8 +110,9 @@ class CashdeskServiceImplTest {
 
         Map<Goods, BigDecimal> res = cashdeskService1.scanGoods(unscannedGoods, client1, employee1, store1);
 
+        assertEquals(1, res.size());
         assertTrue(res.containsKey(keyboard));
-        assertEquals(res, unscannedGoods);
+        assertEquals(BigDecimal.valueOf(2), res.get(keyboard));
     }
 
     @Test

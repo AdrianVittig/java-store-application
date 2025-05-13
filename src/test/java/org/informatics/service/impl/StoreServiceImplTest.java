@@ -22,7 +22,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StoreServiceImplTest {
-
     Store store;
     Employee employee;
     Client client;
@@ -104,25 +103,33 @@ class StoreServiceImplTest {
 
     @Test
     void getTotalProfit_whenSoldGoodsListIsNotEmpty_thenSucceed() throws StoreDeliveredGoodsEmptyException, NotValidArgumentException {
-        HashMap<Goods, BigDecimal> soldGoodsMock = new HashMap();
-        List<Goods> delivered = new ArrayList<>();
         Goods goods = Mockito.mock(Goods.class);
+        Store storeMock = Mockito.mock(Store.class);
+        GoodsService goodsServiceMock = Mockito.mock(GoodsService.class);
+        StoreService storeService = new StoreServiceImpl();
 
-        Mockito.when(goods.getExpirationDate()).thenReturn(LocalDate.of(2027,2,2));
-        Mockito.when(goods.getQuantity()).thenReturn(BigDecimal.ONE);
-        Mockito.when(goods.getManufacturerPrice()).thenReturn(BigDecimal.ONE);
+        HashMap<Goods, BigDecimal> soldGoods = new HashMap<>();
+        List<Goods> deliveredGoods = new ArrayList<>();
+        List<Receipt> receipts = new ArrayList<>();
+        Receipt receipt = Mockito.mock(Receipt.class);
+        Mockito.when(receipt.getTotal()).thenReturn(BigDecimal.valueOf(20));
+        receipts.add(receipt);
 
-        delivered.add(goods);
-        Mockito.when(store.getDeliveredGoods()).thenReturn(delivered);
-        Mockito.when(goodsService.getSellingPrice(goods, store)).thenReturn(BigDecimal.ONE);
+        Mockito.when(goods.getExpirationDate()).thenReturn(LocalDate.now().plusDays(10));
+        Mockito.when(goods.getManufacturerPrice()).thenReturn(BigDecimal.valueOf(5));
 
-        soldGoodsMock.put(goods, BigDecimal.TWO);
+        soldGoods.put(goods, BigDecimal.TWO);
+        deliveredGoods.add(goods);
 
-        Mockito.when(store.getSoldGoods()).thenReturn(soldGoodsMock);
-        Mockito.when(storeService.getTotalRevenue(store, goodsService)).thenReturn(BigDecimal.TWO);
-        Mockito.when(storeService.getGoodsManufacturerPrice(store, goods)).thenReturn(BigDecimal.ONE);
+        Mockito.when(storeMock.getSoldGoods()).thenReturn(soldGoods);
+        Mockito.when(storeMock.getDeliveredGoods()).thenReturn(deliveredGoods);
+        Mockito.when(storeMock.getReceipts()).thenReturn(receipts);
+        Mockito.when(goodsServiceMock.getSellingPrice(goods, storeMock)).thenReturn(new BigDecimal("2.00"));
 
-        assertEquals(BigDecimal.ONE.setScale(2, RoundingMode.HALF_UP), storeService.getTotalProfit(store, goodsService));
+        BigDecimal result = storeService.getTotalProfit(storeMock, goodsServiceMock);
+
+        BigDecimal expected = BigDecimal.valueOf(10).setScale(2, RoundingMode.HALF_UP);
+        assertEquals(expected, result.setScale(2, RoundingMode.HALF_UP));
     }
 
     @Test

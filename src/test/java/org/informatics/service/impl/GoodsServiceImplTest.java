@@ -53,7 +53,7 @@ class GoodsServiceImplTest {
 
     @Test
     void calculatePrice_whenCurrentDateIsBetweenTheExpirationDateAndExpirationDateMinusXDays_thenSucceed() throws ExpiredGoodsException, NotValidArgumentException {
-        Goods goods = new Goods("Keyboard", BigDecimal.valueOf(100), GoodsType.NON_FOODS, LocalDate.of(2025,5,4));
+        Goods goods = new Goods("Keyboard", BigDecimal.valueOf(100), GoodsType.NON_FOODS, LocalDate.of(2025,5,16));
         Store store = Mockito.mock(Store.class);
 
         Mockito.when(store.getSurChargeNonFood()).thenReturn(BigDecimal.valueOf(0.05));

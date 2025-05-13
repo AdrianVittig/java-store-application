@@ -21,6 +21,7 @@ public class Store implements Serializable {
     private List<Client> clientList;
 
     public Store() {
+        this.receipts = new ArrayList<>();
     }
 
     public Store(double percentage) {
