@@ -12,7 +12,6 @@ import java.util.*;
 
 public class Runner {
 
-    static Store store;
     static Employee currEmployee;
     static Cashdesk cashdesk;
     static Client client;
@@ -22,11 +21,6 @@ public class Runner {
     static ReceiptService receiptService = new ReceiptServiceImpl(goodsService, fileService);
     static StoreServiceImpl storeService = new StoreServiceImpl();
     static CashdeskServiceImpl cashdeskService = new CashdeskServiceImpl(receiptService);
-
-
-    static List<Goods> deliveredGoods = new ArrayList<>();
-    static Map<Goods, BigDecimal> clientMap = new HashMap<>();
-    static Map<Goods, BigDecimal> scannedGoodsList = new HashMap<>();
     static List<Store> storeList = new ArrayList<>();
 
     public static void printInfo(){
@@ -67,6 +61,7 @@ public class Runner {
                     }
 
                     int storeChoiceDeliver = scanner.nextInt()-1;
+                    Store selectedStore = storeList.get(storeChoiceDeliver);
 
                     System.out.println("Enter goods name");
                     String goodsName = scanner.next();
@@ -88,7 +83,7 @@ public class Runner {
                     Goods goods = new Goods(goodsName, manPrice, goodsType, localDate);
 
                     try {
-                        storeService.deliverGoods(storeList.get(storeChoiceDeliver), goods, quantity, deliveredGoods);
+                        storeService.deliverGoods(storeList.get(storeChoiceDeliver), goods, quantity, selectedStore.getDeliveredGoods());
                     } catch (NotValidArgumentException e) {
                         throw new RuntimeException(e);
                     }
@@ -114,8 +109,7 @@ public class Runner {
                     }
                     int clientChoice = scanner.nextInt()-1;
 
-                    System.out.println("Client Goods List");
-                    System.out.println(storeList.get(storeChoice).getDeliveredGoods());
+                    selectedStore = storeList.get(storeChoice);
 
                     System.out.println("Choose goods for client to buy");
 
@@ -128,8 +122,12 @@ public class Runner {
                     System.out.println("Quantity:");
                     BigDecimal quantityClientGoods = scanner.nextBigDecimal();
 
-                    clientMap.put(deliveredGoods.get(choiceGoodsClient), quantityClientGoods);
-                    client.setGoodsToBuy(clientMap);
+                    Map<Goods, BigDecimal> goodsToBuy = new HashMap<>();
+
+                    goodsToBuy.put(selectedStore.getDeliveredGoods().get(choiceGoodsClient), quantityClientGoods);
+                    Client selectedClient = selectedStore.getClientList().get(clientChoice);
+                    selectedClient.setGoodsToBuy(goodsToBuy);
+
 
                     try {
                         cashdeskService.performOperationOnCashdesk(storeList.get(storeChoice), storeList.get(storeChoice).getEmployees().get(employeeChoice), storeList.get(storeChoice).getClientList().get(clientChoice));
@@ -144,7 +142,9 @@ public class Runner {
                     } catch (NotAvailableCashdeskException e) {
                         throw new RuntimeException(e);
                     }
-                    System.out.println(scannedGoodsList);
+                    List<Receipt> receipts = selectedStore.getReceipts();
+                    Receipt lastReceipt = receipts.get(receipts.size()-1);
+                    System.out.println(lastReceipt);
                     break;
                 case 3:
                     System.out.println("Which store: 1 - " + storeList.size());
@@ -266,8 +266,8 @@ public class Runner {
                     int daysForSaleInput = scanner.nextInt();
                     System.out.println("Percentage for sale");
                     double percentage = scanner.nextDouble();
-                    store = new Store(storeName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), groceriesSurcharge, nonFoodSurcharge, daysForSaleInput, percentage);
-                    storeList.add(store);
+                    selectedStore = new Store(storeName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), groceriesSurcharge, nonFoodSurcharge, daysForSaleInput, percentage);
+                    storeList.add(selectedStore);
                     System.out.println(storeList);
                     break;
                 case 12:

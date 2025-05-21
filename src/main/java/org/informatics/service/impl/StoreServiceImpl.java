@@ -15,69 +15,70 @@ import java.util.Map;
 public class StoreServiceImpl implements StoreService {
     @Override
     public BigDecimal getTotalSalaries(Store store) throws EmployeeListEmptyException, NotValidArgumentException {
-        BigDecimal totalSalaries = BigDecimal.ZERO;
-        if(store.getEmployees().isEmpty()){
+        List<Employee> emps = store.getEmployees();
+        if (emps == null || emps.isEmpty()) {
             throw new EmployeeListEmptyException("Employee list is empty.");
         }
-        for(Employee emp : store.getEmployees()){
-            if(emp.getSalary().compareTo(BigDecimal.ZERO) <= 0){
+        BigDecimal total = BigDecimal.ZERO;
+        for (Employee emp : emps) {
+            BigDecimal sal = emp.getSalary();
+            if (sal == null || sal.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new NotValidArgumentException("Salary must be a positive value");
             }
-            totalSalaries = totalSalaries.add(emp.getSalary()).setScale(2, BigDecimal.ROUND_HALF_UP);
+            total = total.add(sal).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
-
-        return totalSalaries;
+        return total;
     }
 
     @Override
     public BigDecimal getGoodsManufacturerPrice(Store store, Goods goods) throws StoreDeliveredGoodsEmptyException {
-        BigDecimal totalManufacturerPrice = BigDecimal.ZERO;
-        if(store.getDeliveredGoods().isEmpty()){
-            throw new StoreDeliveredGoodsEmptyException("Delivered goods list is empty.");
+        Map<Goods, BigDecimal> sold = store.getSoldGoods();
+        if (sold == null || sold.isEmpty()) {
+            throw new StoreDeliveredGoodsEmptyException("Sold goods list is empty.");
         }
-        for(Goods good : store.getDeliveredGoods()){
-            totalManufacturerPrice = totalManufacturerPrice.add(goods.getQuantity().multiply(goods.getManufacturerPrice())).setScale(2, BigDecimal.ROUND_HALF_UP);
-        }
-        return totalManufacturerPrice;
+        BigDecimal qty = sold.getOrDefault(goods, BigDecimal.ZERO);
+        return goods.getManufacturerPrice().multiply(qty).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
     public BigDecimal getTotalRevenue(Store store, GoodsService goodsService) throws NotValidArgumentException {
-        BigDecimal totalRevenue = BigDecimal.ZERO;
-
-        if(store.getReceipts().isEmpty()){
-            throw new NotValidArgumentException("Receipts list is empty.");
+        Map<Goods, BigDecimal> sold = store.getSoldGoods();
+        if (sold == null || sold.isEmpty()) {
+            throw new NotValidArgumentException("Sold goods list is empty.");
         }
-        for(Receipt receipt : store.getReceipts()){
-            totalRevenue = totalRevenue.add(receipt.getTotal());
+        BigDecimal revenue = BigDecimal.ZERO;
+        for (Map.Entry<Goods, BigDecimal> entry : sold.entrySet()) {
+            BigDecimal qty = entry.getValue();
+            if (qty.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new NotValidArgumentException("Quantity must be a positive value");
+            }
+            BigDecimal price = goodsService.getSellingPrice(entry.getKey(), store);
+            revenue = revenue.add(price.multiply(qty)).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
-        return totalRevenue;
+        return revenue;
     }
 
     @Override
-    public BigDecimal getTotalProfit(Store store, GoodsService goodsService) throws NotValidArgumentException, StoreDeliveredGoodsEmptyException {
-        BigDecimal totalExpenses = BigDecimal.ZERO;
-        for(Map.Entry<Goods, BigDecimal> entry: store.getSoldGoods().entrySet()){
-            BigDecimal priceOne = entry.getKey().getManufacturerPrice();
-            BigDecimal quantity = entry.getValue();
-            totalExpenses = totalExpenses.add(priceOne.multiply(quantity));
+    public BigDecimal getTotalProfit(Store store, GoodsService goodsService)
+            throws StoreDeliveredGoodsEmptyException, NotValidArgumentException {
+        BigDecimal revenue = getTotalRevenue(store, goodsService);
+        BigDecimal costTotal = BigDecimal.ZERO;
+        for (Goods g : store.getSoldGoods().keySet()) {
+            costTotal = costTotal.add(getGoodsManufacturerPrice(store, g));
         }
-        BigDecimal totalRevenue = BigDecimal.ZERO;
-        for( Receipt receipt : store.getReceipts()){
-            totalRevenue = totalRevenue.add(receipt.getTotal());
-        }
-
-        return totalRevenue.subtract(totalExpenses).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return revenue.subtract(costTotal).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
-    public void deliverGoods(Store store, Goods goods, BigDecimal quantity, List<Goods> listOfDeliveredGoods) throws NotValidArgumentException {
-        if(quantity.compareTo(BigDecimal.ZERO) <= 0){
+    public void deliverGoods(Store store, Goods goods, BigDecimal quantity, List<Goods> listOfDeliveredGoods)
+            throws NotValidArgumentException {
+        if (quantity.compareTo(BigDecimal.ZERO) <= 0) {
             throw new NotValidArgumentException("Quantity must be a positive value");
         }
         goods.setQuantity(quantity);
         store.getDeliveredGoods().add(goods);
-        listOfDeliveredGoods.add(goods);
+        store.getSoldGoods().put(goods, BigDecimal.ZERO);
+//        listOfDeliveredGoods.add(goods);
     }
 
     @Override
@@ -87,10 +88,10 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public BigDecimal getTotalAmountRevenueFromReceipts(Store store) {
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for(Receipt receipt : store.getReceipts()){
-            totalAmount = totalAmount.add(receipt.getTotal());
+        BigDecimal total = BigDecimal.ZERO;
+        for (Receipt r : store.getReceipts()) {
+            total = total.add(r.getTotal());
         }
-        return totalAmount;
+        return total;
     }
 }
