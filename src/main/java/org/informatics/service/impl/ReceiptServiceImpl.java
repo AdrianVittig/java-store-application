@@ -9,6 +9,7 @@ import org.informatics.exception.ExpiredGoodsException;
 import org.informatics.exception.NotEnoughBudgetException;
 import org.informatics.exception.NotValidArgumentException;
 import org.informatics.exception.ReceiptsListIsEmptyException;
+import org.informatics.service.contract.CashdeskService;
 import org.informatics.service.contract.GoodsService;
 import org.informatics.service.contract.ReceiptService;
 import org.informatics.service.contract.FileService;
@@ -16,58 +17,63 @@ import org.informatics.service.contract.FileService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ReceiptServiceImpl implements ReceiptService {
-    List<Receipt> receipts = new ArrayList<>();
-    BigDecimal totalCountSoFar = BigDecimal.ZERO;
-    BigDecimal totalAmountSoFar = BigDecimal.ZERO;
-    Receipt receipt;
+    private final GoodsService goodsService;
+    private final FileService fileService;
+
+    public ReceiptServiceImpl(GoodsService goodsService, FileService fileService) {
+        this.goodsService = goodsService;
+        this.fileService = fileService;
+    }
 
     @Override
     public Receipt getReceipt(Store store, Client client, Employee employee) throws NotEnoughBudgetException, ExpiredGoodsException, NotValidArgumentException {
-        BigDecimal clientTotal = client.getTotalAmount();
-        LocalDateTime dateTime = LocalDateTime.now();
-        receipt = new Receipt();
-        receipt.setGoodsOnReceipt(client.getGoodsToBuy());
-        receipt.setDate(dateTime.toLocalDate());
-        receipt.setTime(dateTime.toLocalTime());
+
+        Receipt receipt = new Receipt();
+        LocalDateTime now = LocalDateTime.now();
+
+        receipt.setDate(now.toLocalDate());
+        receipt.setTime(now.toLocalTime());
         receipt.setEmployeeIssued(employee);
-        GoodsService goodsService = new GoodsServiceImpl();
 
-        for (Goods goods : client.getGoodsToBuy().keySet()) {
-            goods.setSellingPrice(goodsService.calculatePrice(goods, store));
+        Map<Goods, BigDecimal> cart = client.getGoodsToBuy();
+        receipt.setGoodsOnReceipt(cart);
+
+        for(Map.Entry<Goods, BigDecimal> entry : cart.entrySet()) {
+            Goods goods = entry.getKey();
+            BigDecimal wanted = entry.getValue();
+
+            BigDecimal sellingPrice = goodsService.calculatePrice(goods, store);
+            goods.setSellingPrice(sellingPrice);
         }
 
-        receipt.setTotal(clientTotal);
-        FileService serializeDeserializeService = new FileServiceImpl();
-        try {
-            serializeDeserializeService.serializeReceipt("receipt-"+receipt.getId()+".ser", receipt);
-        } catch (IOException e) {
+        BigDecimal total = cart.entrySet().stream().map(e -> e.getKey()
+                .getSellingPrice().multiply(e.getValue())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        receipt.setTotal(total);
+
+        String fileName = String.format("receipt-%s.ser", store.getId(), receipt.getId());
+
+        try{
+            fileService.serializeReceipt(fileName, receipt);
+            fileService.deserializeReceipt(fileName);
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        try {
-            serializeDeserializeService.deserializeReceipt("receipt-"+receipt.getId()+".ser");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        client.setBudget(client.getBudget().subtract(total));
 
-        client.setBudget(client.getBudget().subtract(clientTotal));
-        receipts.add(receipt);
-        try {
-            store.setReceipts(receipts);
-        } catch (NotValidArgumentException e) {
-            throw new RuntimeException(e);
-        }
+        store.getReceipts().add(receipt);
         return receipt;
     }
 
     @Override
     public BigDecimal getTotalAmountSoFar(Store store) throws ReceiptsListIsEmptyException {
+        BigDecimal totalAmountSoFar = BigDecimal.ZERO;
         for(Receipt receipt : store.getReceipts()){
             totalAmountSoFar = totalAmountSoFar.add(receipt.getTotal());
         }
@@ -79,6 +85,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     @Override
     public BigDecimal getTotalCountSoFar(Store store) {
+        BigDecimal totalCountSoFar = BigDecimal.ZERO;
         for(Receipt receipt : store.getReceipts()){
             totalCountSoFar = totalCountSoFar.add(BigDecimal.ONE);
         }

@@ -84,13 +84,21 @@ public class Receipt implements Serializable {
 
     @Override
     public String toString() {
-        return "Receipt{" +
-                "id=" + id +
-                ", employeeIssued=" + employeeIssued +
-                ", date=" + date +
-                ", time=" + time.format(DateTimeFormatter.ofPattern("HH:mm:ss")) +
-                ", goodsOnReceipt=" + goodsOnReceipt +
-                ", total=" + total +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Receipt #").append(id).append(" Date: ").append(date).append(" Time: ").append(time.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                .append("\nIssued by: ").append(employeeIssued).append("\n").append("Items: ");
+        for(var entry : goodsOnReceipt.entrySet()) {
+            Goods goods = entry.getKey();
+            BigDecimal quantity = entry.getValue();
+            sb.append(String.format(
+                    "\n  - %s  x %s  @ %s each = %s",
+                    goods.getName(),
+                    quantity,
+                    goods.getSellingPrice(),
+                    goods.getSellingPrice().multiply(quantity)
+            ));
+        }
+        sb.append("\n Total: ").append(total);
+        return sb.toString();
     }
 }

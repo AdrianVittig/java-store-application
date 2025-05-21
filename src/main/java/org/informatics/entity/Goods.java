@@ -94,12 +94,12 @@ public class Goods implements Serializable {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Goods goods = (Goods) o;
-        return id == goods.id && Objects.equals(name, goods.name) && goodsType == goods.goodsType;
+        return id == goods.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, goodsType);
+        return Objects.hashCode(id);
     }
 
     @Override

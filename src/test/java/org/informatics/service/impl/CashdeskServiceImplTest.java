@@ -49,7 +49,6 @@ class CashdeskServiceImplTest {
         Goods keyboard = new Goods("Keyboard", BigDecimal.valueOf(500), GoodsType.NON_FOODS,
                 LocalDate.of(2028, 2,2));
         keyboard.setQuantity(BigDecimal.valueOf(5));
-        client = new Client(BigDecimal.valueOf(500));
         client.setGoodsToBuy(clientMap);
 
         Store store1 = Mockito.mock(Store.class);

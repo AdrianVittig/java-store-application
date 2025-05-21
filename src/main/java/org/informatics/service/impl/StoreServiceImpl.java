@@ -56,13 +56,18 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public BigDecimal getTotalProfit(Store store, GoodsService goodsService) throws NotValidArgumentException, StoreDeliveredGoodsEmptyException {
-        BigDecimal totalProfit = BigDecimal.ZERO;
         BigDecimal totalExpenses = BigDecimal.ZERO;
         for(Map.Entry<Goods, BigDecimal> entry: store.getSoldGoods().entrySet()){
-            totalExpenses = totalExpenses.add(entry.getKey().getManufacturerPrice().multiply(entry.getValue()));
+            BigDecimal priceOne = entry.getKey().getManufacturerPrice();
+            BigDecimal quantity = entry.getValue();
+            totalExpenses = totalExpenses.add(priceOne.multiply(quantity));
         }
-        totalProfit = getTotalRevenue(store, goodsService).subtract(totalExpenses);
-        return totalProfit;
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+        for( Receipt receipt : store.getReceipts()){
+            totalRevenue = totalRevenue.add(receipt.getTotal());
+        }
+
+        return totalRevenue.subtract(totalExpenses).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
@@ -71,8 +76,8 @@ public class StoreServiceImpl implements StoreService {
             throw new NotValidArgumentException("Quantity must be a positive value");
         }
         goods.setQuantity(quantity);
+        store.getDeliveredGoods().add(goods);
         listOfDeliveredGoods.add(goods);
-        store.setDeliveredGoods(listOfDeliveredGoods);
     }
 
     @Override

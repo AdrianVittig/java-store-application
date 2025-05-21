@@ -2,14 +2,8 @@ package org.informatics;
 
 import org.informatics.entity.*;
 import org.informatics.exception.*;
-import org.informatics.service.contract.CashdeskService;
-import org.informatics.service.contract.GoodsService;
-import org.informatics.service.contract.ReceiptService;
-import org.informatics.service.contract.StoreService;
-import org.informatics.service.impl.CashdeskServiceImpl;
-import org.informatics.service.impl.GoodsServiceImpl;
-import org.informatics.service.impl.ReceiptServiceImpl;
-import org.informatics.service.impl.StoreServiceImpl;
+import org.informatics.service.contract.*;
+import org.informatics.service.impl.*;
 import org.informatics.util.GoodsType;
 
 import java.math.BigDecimal;
@@ -23,18 +17,17 @@ public class Runner {
     static Cashdesk cashdesk;
     static Client client;
 
-    static ReceiptService receiptService = new ReceiptServiceImpl();
+    static FileService fileService = new FileServiceImpl();
+    static GoodsService goodsService = new GoodsServiceImpl();
+    static ReceiptService receiptService = new ReceiptServiceImpl(goodsService, fileService);
     static StoreServiceImpl storeService = new StoreServiceImpl();
     static CashdeskServiceImpl cashdeskService = new CashdeskServiceImpl(receiptService);
-    static GoodsService goodsService = new GoodsServiceImpl();
+
 
     static List<Goods> deliveredGoods = new ArrayList<>();
     static Map<Goods, BigDecimal> clientMap = new HashMap<>();
-    static Map<Goods, BigDecimal> scannedGoodsList = new HashMap();
+    static Map<Goods, BigDecimal> scannedGoodsList = new HashMap<>();
     static List<Store> storeList = new ArrayList<>();
-
-
-    // Store init
 
     public static void printInfo(){
         System.out.println("1. Deliver objects to store");
@@ -165,19 +158,19 @@ public class Runner {
                     client = new Client(budget);
                     storeList.get(storeChoiceClient).getClientList().add(client);
                     break;
-                    case 4:
-                        System.out.println("Which store: 1 - " + storeList.size());
-                        for(int i = 0; i < storeList.size(); i++){
-                            System.out.println((i+1) + " - " + storeList.get(i).getName());
-                        }
-                        int storeChoiceReceiptRevenue = scanner.nextInt()-1;
+                case 4:
+                    System.out.println("Which store: 1 - " + storeList.size());
+                    for(int i = 0; i < storeList.size(); i++){
+                        System.out.println((i+1) + " - " + storeList.get(i).getName());
+                    }
+                    int storeChoiceReceiptRevenue = scanner.nextInt()-1;
 
-                        try {
-                            System.out.println(receiptService.getTotalAmountSoFar(storeList.get(storeChoiceReceiptRevenue)));
-                        } catch (ReceiptsListIsEmptyException e) {
-                            throw new RuntimeException(e);
-                        }
-                        break;
+                    try {
+                        System.out.println(receiptService.getTotalAmountSoFar(storeList.get(storeChoiceReceiptRevenue)));
+                    } catch (ReceiptsListIsEmptyException e) {
+                        throw new RuntimeException(e);
+                    }
+                    break;
                 case 5:
                     System.out.println("Which store: 1 - " + storeList.size());
                     for(int i = 0; i < storeList.size(); i++){
@@ -240,51 +233,51 @@ public class Runner {
                     storeList.get(storeChoiceCreateCashdesk).getCashdesks().add(cashdesk);
                     break;
                 case 10:
-                        System.out.println("Which store: 1 - " + storeList.size());
-                        for(int i = 0; i < storeList.size(); i++){
-                            System.out.println((i+1) + " - " + storeList.get(i).getName());
-                        }
-                        int storeChoiceEmployee = scanner.nextInt()-1;
+                    System.out.println("Which store: 1 - " + storeList.size());
+                    for(int i = 0; i < storeList.size(); i++){
+                        System.out.println((i+1) + " - " + storeList.get(i).getName());
+                    }
+                    int storeChoiceEmployee = scanner.nextInt()-1;
 
-                        System.out.println("Enter employee name");
-                        String employeeName = scanner.next();
-                        System.out.println("Employee salary");
-                        BigDecimal salary = scanner.nextBigDecimal();
+                    System.out.println("Enter employee name");
+                    String employeeName = scanner.next();
+                    System.out.println("Employee salary");
+                    BigDecimal salary = scanner.nextBigDecimal();
 
-                        currEmployee = new Employee(employeeName, salary);
-                        storeList.get(storeChoiceEmployee).getEmployees().add(currEmployee);
+                    currEmployee = new Employee(employeeName, salary);
+                    storeList.get(storeChoiceEmployee).getEmployees().add(currEmployee);
 
-                        try {
-                            storeList.get(storeChoiceEmployee).setEmployees(storeList.get(storeChoiceEmployee).getEmployees());
-                        } catch (NotValidArgumentException e) {
-                            throw new RuntimeException(e);
-                        }
+                    try {
+                        storeList.get(storeChoiceEmployee).setEmployees(storeList.get(storeChoiceEmployee).getEmployees());
+                    } catch (NotValidArgumentException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                        System.out.println("Employee added" + currEmployee.toString());
-                        break;
-                        case 11:
-                            System.out.println("Enter store name");
-                            String storeName = scanner.next();
-                            System.out.println("Enter groceries surcharge");
-                            BigDecimal groceriesSurcharge = scanner.nextBigDecimal();
-                            System.out.println("Enter non food surcharge");
-                            BigDecimal nonFoodSurcharge = scanner.nextBigDecimal();
-                            System.out.println("Enter days for sale");
-                            int daysForSaleInput = scanner.nextInt();
-                            System.out.println("Percentage for sale");
-                            double percentage = scanner.nextDouble();
-                            store = new Store(storeName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), groceriesSurcharge, nonFoodSurcharge, daysForSaleInput, percentage);
-                            storeList.add(store);
-                            System.out.println(storeList);
-                            break;
-                    case 12:
-                        System.out.println("Which store: 1 - " + storeList.size());
-                        for(int i = 0; i < storeList.size(); i++){
-                            System.out.println((i+1) + " - " + storeList.get(i).getName());
-                        }
-                        int storeChoiceEmployeesInfo = scanner.nextInt()-1;
-                        System.out.println(storeList.get(storeChoiceEmployeesInfo).getEmployees());
-                        break;
+                    System.out.println("Employee added" + currEmployee.toString());
+                    break;
+                case 11:
+                    System.out.println("Enter store name");
+                    String storeName = scanner.next();
+                    System.out.println("Enter groceries surcharge");
+                    BigDecimal groceriesSurcharge = scanner.nextBigDecimal();
+                    System.out.println("Enter non food surcharge");
+                    BigDecimal nonFoodSurcharge = scanner.nextBigDecimal();
+                    System.out.println("Enter days for sale");
+                    int daysForSaleInput = scanner.nextInt();
+                    System.out.println("Percentage for sale");
+                    double percentage = scanner.nextDouble();
+                    store = new Store(storeName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), groceriesSurcharge, nonFoodSurcharge, daysForSaleInput, percentage);
+                    storeList.add(store);
+                    System.out.println(storeList);
+                    break;
+                case 12:
+                    System.out.println("Which store: 1 - " + storeList.size());
+                    for(int i = 0; i < storeList.size(); i++){
+                        System.out.println((i+1) + " - " + storeList.get(i).getName());
+                    }
+                    int storeChoiceEmployeesInfo = scanner.nextInt()-1;
+                    System.out.println(storeList.get(storeChoiceEmployeesInfo).getEmployees());
+                    break;
                 case 13:
                     System.out.println("Which store: 1 - " + storeList.size());
                     for(int i = 0; i < storeList.size(); i++){

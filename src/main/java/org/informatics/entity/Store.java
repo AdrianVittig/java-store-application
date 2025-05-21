@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class Store implements Serializable {
+    private long id;
     private String name;
-
     private List<Employee> employees;
     private List<Cashdesk> cashdesks;
     private List<Goods> deliveredGoods;
@@ -19,6 +19,7 @@ public class Store implements Serializable {
     private int daysForSale;
     private double percentage;
     private List<Client> clientList;
+    private static long nextId = 0;
 
     public Store() {
         this.receipts = new ArrayList<>();
@@ -30,6 +31,7 @@ public class Store implements Serializable {
 
     public Store(String name, List<Employee> employees, List<Cashdesk> cashdesks, List<Client> clientList,
                  BigDecimal surChargeGroceries, BigDecimal surChargeNonFood, int daysForSale, double percentage) {
+        this.id = ++nextId;
         this.name = name;
         this.employees = employees;
         this.cashdesks = cashdesks;
@@ -38,6 +40,18 @@ public class Store implements Serializable {
         this.surChargeNonFood = surChargeNonFood.divide(BigDecimal.valueOf(100));
         this.daysForSale = daysForSale;
         this.percentage = percentage / 100;
+        this.deliveredGoods = new ArrayList<>();
+        this.soldGoods = new HashMap<>();
+        this.receipts = new ArrayList<>();
+    }
+
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -192,12 +206,12 @@ public class Store implements Serializable {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Store store = (Store) o;
-        return daysForSale == store.daysForSale && Double.compare(percentage, store.percentage) == 0 && Objects.equals(name, store.name) && Objects.equals(employees, store.employees) && Objects.equals(cashdesks, store.cashdesks) && Objects.equals(deliveredGoods, store.deliveredGoods) && Objects.equals(soldGoods, store.soldGoods) && Objects.equals(receipts, store.receipts) && Objects.equals(surChargeGroceries, store.surChargeGroceries) && Objects.equals(surChargeNonFood, store.surChargeNonFood) && Objects.equals(clientList, store.clientList);
+        return id == store.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, employees, cashdesks, deliveredGoods, soldGoods, receipts, surChargeGroceries, surChargeNonFood, daysForSale, percentage, clientList);
+        return Objects.hashCode(id);
     }
 
     @Override
