@@ -3,6 +3,8 @@ package org.informatics.service.impl;
 import org.informatics.entity.*;
 import org.informatics.exception.NotValidArgumentException;
 import org.informatics.exception.ReceiptsListIsEmptyException;
+import org.informatics.service.contract.FileService;
+import org.informatics.service.contract.GoodsService;
 import org.informatics.service.contract.ReceiptService;
 import org.informatics.util.GoodsType;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,14 +27,19 @@ class ReceiptServiceImplTest {
     Employee employee;
     Receipt receipt;
     ReceiptService receiptService;
+    GoodsService goodsService;
+    FileService fileService;
 
     @BeforeEach
     void setUp() {
         store = Mockito.mock(Store.class);
+        Mockito.when(store.getId()).thenReturn(1L);
         employee = new Employee("Adrian", BigDecimal.valueOf(1200));
         goodsToBuy = new HashMap<>();
         receipt = Mockito.mock(Receipt.class);
-        receiptService = new ReceiptServiceImpl();
+        goodsService = new GoodsServiceImpl();
+        fileService = new FileServiceImpl();
+        receiptService = new ReceiptServiceImpl(goodsService, fileService);
     }
 
     @Test

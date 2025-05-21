@@ -5,10 +5,7 @@ import org.informatics.entity.Employee;
 import org.informatics.entity.Goods;
 import org.informatics.entity.Store;
 import org.informatics.exception.*;
-import org.informatics.service.contract.CashdeskService;
-import org.informatics.service.contract.GoodsService;
-import org.informatics.service.contract.ReceiptService;
-import org.informatics.service.contract.StoreService;
+import org.informatics.service.contract.*;
 import org.informatics.util.GoodsType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,10 +28,12 @@ class CashdeskServiceImplTest {
     Employee employee;
     ReceiptService receiptService;
     HashMap<Goods,BigDecimal> clientMap;
+    GoodsService goodsService;
+    FileService fileService;
 
     @BeforeEach
     void setUp() {
-        receiptService = new ReceiptServiceImpl();
+        receiptService = new ReceiptServiceImpl(goodsService, fileService);
         cashdeskService = new CashdeskServiceImpl(receiptService);
         storeService = new StoreServiceImpl();
         store = new Store();
